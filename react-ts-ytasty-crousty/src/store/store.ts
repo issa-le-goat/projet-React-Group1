@@ -1,13 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
-import userReducer from './reducers/user'; // Import de ton reducer
+import userReducer from './reducers/user';
+import favoritesReducer from './reducers/favorites';
+import blogReducer from './reducers/blogSlice'; // Ajout
 
 export const store = configureStore({
   reducer: {
-    auth: userReducer, // "auth" sera le nom utilisé pour accéder à ces données
-    // Tu pourras ajouter "favorites" et "blog" ici plus tard
+    auth: userReducer,
+    favorites: favoritesReducer,
+    blog: blogReducer, // Ajout
   },
 });
 
-// Déduction automatique des types pour TypeScript
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -1,40 +1,31 @@
-/*import axios from "axios";
-import { useEffect, useState } from "react";
-import type { User } from "../types/user";*/
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../store/store";
-/*interface UsersResponse {
-  users: User[];
-}*/
-function UserList() {
-  const users = useSelector((state: RootState) => state.user.users)
-  /*
-  const url = "https://dummyjson.com/users";
-  const [users, setUsers] = useState<User[]>([])
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await axios.get<UsersResponse>(url);
-        setUsers(response.data.users);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, []);*/
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import type { RootState } from '../store/store';
+
+export default function UserList() {
+  const users = useSelector((state: RootState) => state.auth.usersList);
 
   return (
-    <>
-      {users.map((user) =>
-        <div>
-          <p>name : {user.firstName}</p>
-          <p>last name : {user.lastName}</p>
-          <Link to={`/user/${user.id}`}>Go to user</Link>
-        </div>
+    <div className="page-container page-container-sm">
+      <h1 className="text-center">Annuaire des Utilisateurs</h1>
+      
+      {users.length === 0 ? (
+        <p className="text-center">Chargement des utilisateurs...</p>
+      ) : (
+        <ul className="list-unstyled">
+          {users.map((user) => (
+            <li key={user.id} className="user-card">
+              <Link to={`/users/${user.id}`} className="user-link">
+                <img src={user.image} alt={user.username} className="user-avatar" />
+                <div>
+                  <strong className="user-name">{user.firstName} {user.lastName}</strong>
+                  <span className="user-handle">@{user.username}</span>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
-    </>
-
+    </div>
   );
 }
-
-export default UserList;

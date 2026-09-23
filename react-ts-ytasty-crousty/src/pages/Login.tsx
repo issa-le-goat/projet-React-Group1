@@ -1,32 +1,40 @@
 import { useState } from 'react';
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../store/reducers/user';
+import axios from 'axios';
 
-function Login() {
-    const [username, setUsername] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [isLogged, setIsLogged] = useState<boolean>(false);
-    const url = "https://dummyjson.com/auth/login"
-    const navigate = useNavigate();
+export default function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const onLogin = async () => {
-        try {
-            const token = await axios.post(url, { username, password });
-            console.log(token);
-            localStorage.setItem("token", token.data.accessToken);
-            setIsLogged(true);
-            navigate(`/user/${token.data.id}`);
-        } catch (e) {
-            setIsLogged(false);
-        }
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const response = await axios.post('https://dummyjson.com/auth/login', {
+        username, password, expiresInMins: 60,
+      });
+      dispatch(loginSuccess({ token: response.data.token, user: response.data }));
+      navigate('/profile');
+    } catch (err) {
+      setError("Identifiants incorrects. Veuillez réessayer.");
     }
-    return (
-        <>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <button onClick={onLogin}>Se connecter</button>
-            {isLogged ? <p>Connexion réussie</p> : (username && password) && <p>Connexion échouée</p>}
-        </>
-    );
+  };
+
+  return (
+    <div className="login-container">
+      <h1>Connexion</h1>
+      <form onSubmit={handleLogin} className="login-form">
+        <input type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} required className="form-input" />
+        <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required className="form-input" />
+        {error && <p className="error-msg">{error}</p>}
+        <button type="submit" className="btn btn-fav-inactive">Se connecter</button>
+      </form>
+    </div>
+  );
 }
-export default Login;

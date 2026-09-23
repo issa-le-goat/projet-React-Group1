@@ -4,20 +4,23 @@ import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import axios from 'axios';
-import './index.css';
+import './assets/index.css';
 
-// Importation des composants et pages
+// Imports corrigés avec les NOMS EXACTS des fichiers présents dans tes dossiers
 import Header from './components/Header';
-import HomePage from './pages/HomePage'; // Page d'accueil avec les recettes
+import HomePage from './pages/HomePage';
 import UserList from './pages/UserList';
 import User from './pages/User';
 import Recipe from './pages/Recipe';
 import Login from './pages/Login';
-import Profile from './pages/Profile';
+import Profile from './pages/UserProfile'; 
+import Favorites from './pages/Favorites'; 
+import Blog from './pages/Blog'; // Nouvel import pour la page principale du blog
+import Post from './pages/Post'; // Nouvel import pour la page détaillée d'un article
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
-import type { User as UserType } from "./types/user";
 import { setUsers } from './store/reducers/user';
+import type { User as UserType } from "./types/user";
 
 // Pré-chargement des utilisateurs dans le store Redux au démarrage
 const prefetchUsers = async () => {
@@ -44,12 +47,17 @@ const Layout = () => (
 const router = createBrowserRouter([
   {
     element: <Layout />,
-    errorElement: <NotFound />, // Gère les pages 404
+    errorElement: <NotFound />,
     children: [
       { path: "/", element: <HomePage /> },
       { path: "/recipe/:id", element: <Recipe /> },
-      { path: "/users", element: <UserList /> }, // Modifié en /users selon le TP[cite: 4]
-      { path: "/users/:id", element: <User /> }, // Modifié pour cohérence[cite: 4]
+      { path: "/users", element: <UserList /> },
+      { path: "/users/:id", element: <User /> },
+      
+      // Nouvelles routes pour l'espace Blog
+      { path: "/posts", element: <Blog /> },
+      { path: "/posts/:id", element: <Post /> },
+      
       { path: "/login", element: <Login /> },
       
       // Bloc des routes protégées (nécessitent d'être connecté)
@@ -57,7 +65,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: "/profile", element: <Profile /> },
-          // La route /favoris viendra ici plus tard[cite: 4]
+          { path: "/favoris", element: <Favorites /> } 
         ]
       }
     ]
